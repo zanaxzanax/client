@@ -1,0 +1,34 @@
+@import '~bootstrap/scss/bootstrap';
+//
+//input:invalid {
+//    border: 2px dashed red;
+//}
+//
+//input:valid {
+//    border: 2px solid black;
+//}
+
+canvas {
+    border: 1px solid black;
+}
+
+#connect-informer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+
+    &.success {
+        background-color: $success;
+    }
+
+    &.error {
+        background-color: $danger;
+    }
+
+    &.warning {
+        background-color: $warning;
+    }
+}

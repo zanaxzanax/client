@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "target": "es6",
+    "baseUrl": "src",
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "outDir": "ts-build",
+    "moduleResolution": "node",
+    "strict": false
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
