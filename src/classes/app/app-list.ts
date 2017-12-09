@@ -1,9 +1,10 @@
-import {AppListInterface, AppType, GameItem} from '../../types';
+import {AppListInterface, GameItem} from '../../types';
 import App from './app';
+import {AppType} from '../enums';
 
 export default class AppList extends App implements AppListInterface {
 
-    type: AppType = AppType.list;
+    type: number = AppType.list;
     games: GameItem[] = [];
 
     initialize(elem: HTMLElement): Promise<boolean> {

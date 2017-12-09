@@ -1,4 +1,3 @@
-
 export enum AppType {
     list,
     single,
@@ -11,6 +10,12 @@ export enum PivotPointType {
     DOWN,
     LEFT,
     RIGHT
+}
+
+export enum SocketConnectStatus {
+    connected,
+    error,
+    disconnected
 }
 
 export enum GameState {

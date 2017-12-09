@@ -1,8 +1,3 @@
-export enum SocketConnectStatus {
-    connected,
-    error,
-    disconnected
-}
 
 export interface SocketInterface {
     initialized: boolean;

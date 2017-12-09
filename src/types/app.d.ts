@@ -1,12 +1,12 @@
 import {PlayerInterface} from './player';
-import {SocketConnectStatus, SocketInterface} from './socket';
+import {SocketInterface} from './socket';
 import {GameItem, MultiGameInterface, SingleGameInterface} from './game';
 import {DrawingInterface} from './drawing';
 
 export interface AppInterface {
     initialized: boolean;
     elem: HTMLElement;
-    SocketConnectStatus: SocketConnectStatus;
+    SocketConnectStatus: number;
     socket: SocketInterface;
     player: PlayerInterface;
     type: number;

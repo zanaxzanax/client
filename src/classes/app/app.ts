@@ -1,16 +1,17 @@
 import * as _ from 'lodash';
-import {AppInterface, AppType, PlayerInterface, SocketConnectStatus, SocketInterface} from '../../types';
 import Socket from '../../socket';
 import Player from '../game/player';
+import {AppInterface, PlayerInterface, SocketInterface} from './../../types';
+import {SocketConnectStatus} from './../enums';
 
 export default class App implements AppInterface {
 
     initialized: boolean = false;
     elem: HTMLElement;
-    SocketConnectStatus: SocketConnectStatus;
+    SocketConnectStatus: number;
     socket: SocketInterface;
     player: PlayerInterface;
-    type: AppType;
+    type: number;
 
     initialize(elem: HTMLElement): Promise<boolean> {
 

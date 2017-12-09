@@ -1,11 +1,12 @@
-import {AppSingleInterface, AppType, DrawingInterface, SingleGameInterface} from '../../types';
+import {AppSingleInterface, DrawingInterface, SingleGameInterface} from '../../types';
 import App from './app';
 import {Drawing} from '../drawing';
 import {SingleGame} from '../game';
+import {AppType} from '../enums';
 
 export default class AppSingle extends App implements AppSingleInterface {
 
-    type: AppType = AppType.single;
+    type: number = AppType.single;
     drawing: DrawingInterface;
     game: SingleGameInterface;
 

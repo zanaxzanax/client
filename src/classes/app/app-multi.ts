@@ -1,11 +1,12 @@
 import {Drawing} from '../drawing';
 import {MultiGame} from '../game';
 import App from './app';
-import {AppMultiInterface, AppType, DrawingInterface, GameItem, MultiGameInterface} from '../../types';
+import {AppMultiInterface, DrawingInterface, GameItem, MultiGameInterface} from '../../types';
+import {AppType} from '../enums';
 
 export default class AppMulti extends App implements AppMultiInterface {
 
-    type: AppType = AppType.multiplayer;
+    type: number = AppType.multiplayer;
     drawingLeft: DrawingInterface;
     drawingRight: DrawingInterface;
     game: MultiGameInterface;
