@@ -15,11 +15,21 @@ export default class AppList extends App implements AppListInterface {
 
         return Promise.resolve()
             .then(() => super.initialize(elem))
-            .then(() => this.refresh())
             .catch((err) => {
                 console.error(err);
                 return false;
             });
+    }
+
+    onSocketConnect(arg: any): void {
+        super.onSocketConnect(arg);
+        this.refresh();
+    }
+
+    onSocketDisconnect(arg: any): void {
+        super.onSocketDisconnect(arg);
+        this.games.length = 0;
+        this.drawGames();
     }
 
     refresh(): Promise<any> {
@@ -45,10 +55,11 @@ export default class AppList extends App implements AppListInterface {
     }
 
     updateGames(games: GameItem[]): void {
+        console.log('updateGames', games);
         this.games.forEach((game: GameItem, i: number) => {
             const founded = games.find((g: GameItem) => g.uuid === game.uuid);
             if (founded) {
-                this.games.splice(i, 1, game);
+                this.games.splice(i, 1, founded);
             }
         });
         this.drawGames();
@@ -69,8 +80,14 @@ export default class AppList extends App implements AppListInterface {
         if (this.player.uuid === game.creator.uuid) {
             result += `<button class="btn btn-link  btn-sm" onclick="appSnake.removeGame('${game.uuid}')">remove</button>`;
         }
-        result += `<a class="btn btn-primary btn-sm" href="/game/${game.uuid}">join</a>`;
+        if (!this._isGameFull(game)) {
+            result += `<a class="btn btn-primary btn-sm" href="/game/${game.uuid}">join</a>`;
+        }
         return result;
+    }
+
+    getSlots(game: GameItem): string {
+        return `[${game.slots.length}/${game.playersLimit}]`;
     }
 
     getGameRow(game: GameItem, i: number): string {
@@ -78,6 +95,7 @@ export default class AppList extends App implements AppListInterface {
         row += `<tr id="${game.uuid}">`;
         row += `<td>${i}</td>`;
         row += `<td>${game.name}</td>`;
+        row += `<td>${this.getSlots(game)}</td>`;
         row += `<td>${this.getRowActions(game)}</td>`;
         row += `</tr>`;
         return row;
@@ -89,6 +107,7 @@ export default class AppList extends App implements AppListInterface {
                 <tr>
                   <th>#</th>
                   <th>Название</th>
+                  <th>Слоты</th>
                   <th>Действия</th>
                 </tr>
             </thead>`
@@ -108,5 +127,9 @@ export default class AppList extends App implements AppListInterface {
         content += this.getTableBody();
         content += `</table>`;
         container.innerHTML = content;
+    }
+
+    private _isGameFull(game: GameItem): boolean {
+        return game.playersLimit === game.slots.length;
     }
 }

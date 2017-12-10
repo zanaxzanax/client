@@ -12,8 +12,8 @@ export interface AppInterface {
     type: number;
     initialize: (elem: HTMLElement) => Promise<boolean>;
     onSocketError: (err) => void;
-    onSocketDisconnect: () => void;
-    onSocketConnect: () => void;
+    onSocketDisconnect: (arg) => void;
+    onSocketConnect: (arg) => void;
     request: (url: string, options?: object) => Promise<any>;
     getToken: () => string;
 }

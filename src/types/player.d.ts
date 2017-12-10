@@ -9,4 +9,6 @@ export interface PlayerInterface {
     uuid: string;
     state: number;
     isReady: () => boolean;
+    isLoser: () => boolean;
+    isWinner: () => boolean;
 }

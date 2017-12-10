@@ -7,9 +7,13 @@ import {GoodPointInterface, PivotPointInterface, PointItem} from './point';
 export interface GameItem {
     name: string;
     state: number;
+    playersLimit: number;
+    startTime: number;
+    endTime: number;
+    now: number;
     slots: PlayerItem[];
-    snakes: SnakeItem[];
-    goods: PointItem[];
+    snakes: { [key: string]: SnakeItem };
+    goods: { [key: string]: PointItem };
     creator: PlayerItem;
     uuid: string;
 }
@@ -20,12 +24,6 @@ export interface GameEvent {
     data: any;
     game?: string;
     player?: string;
-}
-
-export interface PivotPointEventData {
-    x: number;
-    y: number;
-    direction: number;
 }
 
 export interface GameStatistic {
@@ -50,14 +48,14 @@ export interface GameInterface {
     startTime: number;
     endTime: number;
     initialized: boolean;
-    setState: (state: number) => void;
+    //setState: (state: number) => void;
     initialize: (game?: GameItem) => boolean;
     start: () => void;
     stop: () => void;
     processEvents: (events: GameEvent[]) => void;
     randomInteger: (min, max) => number;
     getRandomX: () => number;
-    getRandowY: () => number;
+    getRandomY: () => number;
     addGoods: () => void;
     drawStats: () => void;
     updateStats: () => void;
@@ -68,12 +66,14 @@ export interface GameInterface {
     startMovement: () => void;
     stopMovement: () => void;
     tick: (events: GameEvent[]) => void;
-    addPivotPoint: (data: PivotPointEventData) => void
+    addPivotPoint: (data: PointItem) => void;
+    bindEvents: (bool: boolean) => void;
 }
 
 export interface MultiGameInterface extends GameInterface {
     uuid: string;
     game: GameItem;
+    opponentSnake: SnakeInterface;
     drawingLeft: DrawingInterface;
     drawingRight: DrawingInterface;
     updateGame: (game: GameItem) => void;

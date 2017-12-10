@@ -2,15 +2,13 @@ import {
     BodyPointInterface,
     GameInterface,
     GoodPointInterface,
-    HeadPointInterface,
     PivotPointInterface,
     PointInterface,
+    PointItem,
     SnakeInterface,
     SnakeOptions
 } from '../../types';
 import BodyPoint from './body-point';
-import HeadPoint from './head-point';
-import * as _ from 'lodash';
 import {PivotPointType} from '../enums';
 
 export default class Snake implements SnakeInterface {
@@ -24,29 +22,18 @@ export default class Snake implements SnakeInterface {
         bodyColor: 'magenta',
     };
 
-    options: SnakeOptions;
-    head: HeadPointInterface[] = [];
-    body: BodyPointInterface[] = [];
+    points: BodyPointInterface[] = [];
 
-    constructor(public game: GameInterface, options: SnakeOptions) {
-        this.options = _.extend({}, Snake.defaults, options);
-        this.head = [new HeadPoint(this, {
-            x: this.options.startX,
-            y: this.options.startY,
-            direction: this.options.direction
-        })];
+    constructor(public game: GameInterface, points: PointItem[]) {
+        this.points = points.map((point: PointItem) => new BodyPoint(this.game, point));
     }
 
-    get headPoint(): HeadPointInterface {
-        return this.head[0];
+    get headPoint(): BodyPointInterface {
+        return this.points[0];
     }
 
     get lastPoint(): BodyPoint {
         return this.points[this.points.length - 1];
-    }
-
-    get points(): BodyPoint[] {
-        return [...this.head, ...this.body];
     }
 
     isSelfHit(): boolean {
@@ -84,7 +71,7 @@ export default class Snake implements SnakeInterface {
                 break;
         }
 
-        this.body.push(new BodyPoint(this, x, y, this.lastPoint.direction));
+        this.points.push(new BodyPoint(this.game, {x, y, direction: this.lastPoint.direction}));
 
         //this.lastPoint.draw();
     }
@@ -122,7 +109,7 @@ export default class Snake implements SnakeInterface {
                     break;
             }
 
-            if (point instanceof HeadPoint) {
+            if (this.points.indexOf(point) === 0) { // is head
                 if (point.x === good.x && point.y === good.y) {
                     good.eat();
                     //  this.grow();

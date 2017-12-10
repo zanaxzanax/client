@@ -32,17 +32,20 @@ export default class App implements AppInterface {
             });
     }
 
-    onSocketError(err): void {
+    onSocketError(err: any): void {
+        console.log('onSocketError', err);
         this.SocketConnectStatus = SocketConnectStatus.error;
         this._toggleConnectInformerClass(true);
     }
 
-    onSocketDisconnect(): void {
+    onSocketDisconnect(arg: any): void {
+        console.log('onSocketDisconnect', arg);
         this.SocketConnectStatus = SocketConnectStatus.disconnected;
         this._toggleConnectInformerClass(false, true);
     }
 
-    onSocketConnect(): void {
+    onSocketConnect(arg: any): void {
+        console.log('onSocketConnect', arg);
         this.SocketConnectStatus = SocketConnectStatus.connected;
         this._toggleConnectInformerClass(false, false, true);
     }

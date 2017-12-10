@@ -1,5 +1,4 @@
 export * from './point';
-export * from './head-point';
 export * from './body-point';
 export * from './pivot-point';
 export * from './snake';

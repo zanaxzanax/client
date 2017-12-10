@@ -1,4 +1,4 @@
-import {BodyPointInterface, HeadPointInterface, PointItem} from './point';
+import {BodyPointInterface, PointItem} from './point';
 import {GameInterface} from './game';
 
 export interface SnakeOptions {
@@ -16,10 +16,7 @@ export interface SnakeItem {
 
 export interface SnakeInterface {
     game: GameInterface
-    options: SnakeOptions;
-    head: HeadPointInterface[];
-    body: BodyPointInterface[];
-    headPoint: HeadPointInterface;
+    headPoint: BodyPointInterface;
     lastPoint: BodyPointInterface;
     points: BodyPointInterface[];
     isSelfHit: () => boolean;

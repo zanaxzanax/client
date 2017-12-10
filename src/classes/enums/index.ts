@@ -19,7 +19,7 @@ export enum SocketConnectStatus {
 }
 
 export enum GameState {
-    CREATED, PLAY, WIN, LOSE, DELETED
+    CREATED, PLAY, DONE, DELETED
 }
 
 export enum GameTypes {
@@ -35,5 +35,5 @@ export enum GameSide {
 }
 
 export enum PlayerState {
-    NOT_READY, READY
+    NOT_READY, READY, WINNER, LOSER
 }

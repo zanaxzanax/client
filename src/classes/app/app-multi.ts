@@ -23,21 +23,24 @@ export default class AppMulti extends App implements AppMultiInterface {
 
         return Promise.resolve()
             .then(() => super.initialize(elem))
-            .then(() => this._loadGameItem())
-            .then((game: GameItem) => {
-                if (game) {
-                    this.drawingLeft.initialize(document.getElementById('fieldLeft') as HTMLCanvasElement);
-                    this.drawingRight.initialize(document.getElementById('fieldRight') as HTMLCanvasElement);
-                    this.game.initialize(game);
-                    this.game.redraw();
-                    return true;
-                } else {
-                    throw new Error('no game for page');
-                }
+            .then(() => {
+                this.drawingLeft.initialize(document.getElementById('fieldLeft') as HTMLCanvasElement);
+                this.drawingRight.initialize(document.getElementById('fieldRight') as HTMLCanvasElement);
+                return true;
             }).catch((err) => {
                 console.error(err);
                 return false;
             });
+    }
+
+    onSocketConnect(arg: any): void {
+        super.onSocketConnect(arg);
+        this._loadGameItem().then((game: GameItem) => this.game.initialize(game));
+    }
+
+    onSocketDisconnect(arg: any): void {
+        super.onSocketDisconnect(arg);
+
     }
 
     updateGames(games: GameItem[]): void {

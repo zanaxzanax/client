@@ -1,5 +1,4 @@
 import {GameInterface} from './game';
-import {SnakeInterface} from './snake';
 import {DrawingInterface} from './drawing';
 
 export interface PointInterface {
@@ -31,13 +30,9 @@ export interface PivotPointInterface extends PointInterface {
     isOpposite: (direction: PivotPointInterface) => boolean;
 }
 
-export interface HeadPointInterface extends BodyPointInterface {
-    toPoint: () => PointItem;
-}
-
 export interface BodyPointInterface extends PointInterface {
     direction: number;
-    snake: SnakeInterface;
+    game: GameInterface;
 }
 
 export interface GoodPointInterface extends PointInterface {

@@ -1,17 +1,23 @@
 import Point from './point';
-import {BodyPointInterface, DrawingInterface, PointItem, SnakeInterface} from '../../types';
+import {BodyPointInterface, DrawingInterface, GameInterface, PointItem} from '../../types';
 
 export default class BodyPoint extends Point implements BodyPointInterface {
 
+    x: number;
+    y: number;
+    direction: number;
     drawing: DrawingInterface;
 
-    constructor(public snake: SnakeInterface, public x: number, public y: number, public direction: number) {
-        super(x, y);
-        this.drawing = this.snake.game.drawing;
+    constructor(public game: GameInterface, options: PointItem) {
+        super(options.x, options.y);
+        this.x = options.x;
+        this.y = options.y;
+        this.direction = options.direction;
+        this.drawing = this.game.drawing;
     }
 
     draw(): void {
-        this.drawing.drawPointByCoordinates(this.x, this.y, this.snake.options.headColor);
+        this.drawing.drawPointByCoordinates(this.x, this.y/*, this.snake.options.headColor*/);
     }
 
     toJSON(): PointItem {
