@@ -1,4 +1,5 @@
 import './main.scss';
+import 'moment-duration-format';
 import AppMulti from './classes/app/app-multi';
 
 const app = new AppMulti();

@@ -8,6 +8,7 @@ export class Drawing implements DrawingInterface {
     static canvasHeight: number = 500;
     static canvasWidth: number = 500;
 
+    static canvasTopPadding: number = 10;
     static canvasResolutionHeight: number = 100;
     static canvasResolutionWidth: number = 100;
 
@@ -24,11 +25,11 @@ export class Drawing implements DrawingInterface {
     }
 
     get maxX(): number {
-        return Drawing.canvasResolutionWidth;
+        return Drawing.canvasResolutionWidth - 1;
     }
 
     get maxY(): number {
-        return Drawing.canvasResolutionHeight;
+        return Drawing.canvasResolutionHeight - 1;
     }
 
     get centerX(): number {
@@ -54,9 +55,11 @@ export class Drawing implements DrawingInterface {
     }
 
     drawButton(x: number, y: number, width: number, height: number, text: string, color: string, callback: any): void {
+        y += Drawing.canvasTopPadding;
         this.canvasContext.fillStyle = color;
-        this.canvasContext.fillRect(x * this.stepHorizontal - width / 2, y * this.stepVertical - height / 2, width, height);
-        this.text(text, x, y);
+        this.canvasContext.fillRect(x * this.stepHorizontal - width / 2,
+            y * this.stepVertical - height / 2, width, height);
+        this.text(text, x, y - 10);
         this.elements.push({
             x: x * this.stepHorizontal - width / 2,
             y: y * this.stepVertical - height / 2,
@@ -76,15 +79,22 @@ export class Drawing implements DrawingInterface {
         this.canvasContext.fillRect(0, 0, Drawing.canvasWidth, Drawing.canvasHeight);
 
         this.stepHorizontal = (Drawing.canvasWidth / Drawing.canvasResolutionWidth);
-        this.stepVertical = (Drawing.canvasHeight / Drawing.canvasResolutionHeight);
+        this.stepVertical = (Drawing.canvasHeight / (Drawing.canvasResolutionHeight + Drawing.canvasTopPadding));
 
         this.setText('10px Arial');
         this.canvasContext.textAlign = 'center';
         this.canvasContext.textBaseline = 'middle';
     }
 
-    text(text: string, x: number, y: number, color?: string): void {
+    statsText(text: string, x: number, y: number, color?: string, align?: string): void {
+        y -= Drawing.canvasTopPadding;
+        this.text(text, x, y, color, align || 'left');
+    }
+
+    text(text: string, x: number, y: number, color?: string, align?: string): void {
+        y += Drawing.canvasTopPadding;
         this.canvasContext.fillStyle = color || 'black';
+        this.canvasContext.textAlign = align || 'center';
         this.canvasContext.fillText(text, x * this.stepHorizontal, y * this.stepVertical);
     }
 
@@ -104,48 +114,42 @@ export class Drawing implements DrawingInterface {
         }
     }
 
-    drawCells(): void {
-        const stepCountVertical: number = Drawing.canvasWidth / this.stepHorizontal;
-        const stepCountHorizontal: number = Drawing.canvasHeight / this.stepVertical;
-        this.setPen(1);
-        for (let i = 1; i < stepCountVertical; i++) {
-            this.drawLine(i * this.stepHorizontal, 0, i * this.stepHorizontal, Drawing.canvasHeight);
-        }
-        for (let i = 1; i < stepCountHorizontal; i++) {
-            this.drawLine(0, i * this.stepVertical, Drawing.canvasWidth, i * this.stepVertical);
-        }
-    }
-
-    drawLine(fromX: number, fromY: number, toX: number, toY: number): void {
-        this.canvasContext.beginPath();
-        this.canvasContext.moveTo(fromX, fromY);
-        this.canvasContext.lineTo(toX, toY);
-        this.canvasContext.stroke();
-    }
-
     drawPointByCoordinates(x: number, y: number, color?: string): void {
+        y += Drawing.canvasTopPadding;
         if (color) {
             this.canvasContext.fillStyle = color;
         }
         x *= this.stepHorizontal;
         y *= this.stepVertical;
-        this.drawPoint(x, y, this.stepHorizontal, this.stepVertical);
+        this._drawPoint(x, y, this.stepHorizontal, this.stepVertical);
     }
 
-    removePointByCoordinates(x: number, y: number): void {
-        x *= this.stepHorizontal;
-        y *= this.stepVertical;
-        this.canvasContext.fillStyle = Drawing.canvasBgColor;
-        this.drawPoint(x, y, this.stepHorizontal, this.stepVertical);
+    drawField(): void {
+        this._drawBorders();
+        this._drawDelimiter();
     }
 
-    drawPoint(fromX: number, fromY: number, width: number, height: number): void {
+    private _drawPoint(fromX: number, fromY: number, width: number, height: number): void {
         this.canvasContext.fillRect(fromX, fromY, width, height);
-        // this.canvasContext.fill();
     }
 
-    clearPoint(fromX: number, fromY: number, width: number, height: number): void {
-        this.canvasContext.clearRect(fromX, fromY, width, height);
+    private _drawDelimiter(): void {
+        this.canvasContext.beginPath();
+        this.canvasContext.moveTo(0, Drawing.canvasTopPadding * this.stepVertical);
+        this.canvasContext.lineTo(Drawing.canvasResolutionHeight * this.stepHorizontal,
+            Drawing.canvasTopPadding * this.stepVertical);
+        this.canvasContext.stroke();
+    }
+
+    private _drawBorders(): void {
+        this.canvasContext.beginPath();
+        this.canvasContext.moveTo(0, 0);
+        this.canvasContext.lineTo(Drawing.canvasResolutionWidth * this.stepHorizontal, 0);
+        this.canvasContext.lineTo(Drawing.canvasResolutionWidth * this.stepHorizontal,
+            (Drawing.canvasResolutionHeight + Drawing.canvasTopPadding) * this.stepVertical);
+        this.canvasContext.lineTo(0, (Drawing.canvasResolutionHeight + Drawing.canvasTopPadding) * this.stepVertical);
+        this.canvasContext.closePath();
+        this.canvasContext.stroke();
     }
 
     private _bindEvents() {

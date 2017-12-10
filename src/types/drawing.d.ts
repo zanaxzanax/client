@@ -23,16 +23,13 @@ export interface DrawingInterface {
     center: PointInterface;
     initialize: (elem: HTMLCanvasElement) => boolean;
     prepareCanvas: () => void;
-    text: (text: string, x: number, y: number, color?: string) => void;
+    statsText: (text: string, x: number, y: number, color?: string, align?: string) => void;
+    text: (text: string, x: number, y: number, color?: string, align?: string) => void;
     clear: () => void;
     setText: (font: string) => void;
     setPen: (width: number, color?: string) => void;
-    drawCells: () => void;
-    drawLine: (fromX: number, fromY: number, toX: number, toY: number) => void;
     drawPointByCoordinates: (x: number, y: number, color?: string) => void;
     drawButton: (x: number, y: number, width: number, height: number, text: string, color: string, callback: any) => void;
-    removePointByCoordinates: (x: number, y: number) => void;
-    drawPoint: (fromX: number, fromY: number, width: number, height: number) => void;
-    clearPoint: (fromX: number, fromY: number, width: number, height: number) => void;
     elements: DrawElement[];
+    drawField: () => void;
 }

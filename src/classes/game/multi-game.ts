@@ -147,6 +147,8 @@ export class MultiGame extends Game implements MultiGameInterface {
 
         this.drawing.clear();
 
+        this.drawing.drawField();
+
         const centerPoint: PointInterface = this.drawing.center;
         const curSidePlayer: PlayerInterface = this.curSidePlayer;
         const curSideOpponent: PlayerInterface = this.curSideOpponent;
@@ -154,7 +156,7 @@ export class MultiGame extends Game implements MultiGameInterface {
         switch (this.state) {
             case GameState.CREATED:
                 console.log('GameState.CREATED');
-
+                this.drawing.statsText('WAITING', centerPoint.x, Drawing.canvasTopPadding / 2, 'blue', 'center');
                 if (this._isMainSide()) {
                     if (curSidePlayer) {
                         this.drawing.text(curSidePlayer.name, centerPoint.x, centerPoint.y - 10, 'blue');
@@ -182,7 +184,8 @@ export class MultiGame extends Game implements MultiGameInterface {
 
                 this._drawStats();
 
-                this.drawing.text('GAME OVER', centerPoint.x, centerPoint.y - 30, 'blue');
+                this.drawing.statsText('GAME OVER', centerPoint.x, Drawing.canvasTopPadding / 2, 'blue', 'center');
+                //this.drawing.statsText('PLAY', this.drawing.maxX - 1, Drawing.canvasTopPadding / 2, 'black', 'right');
                 if (curSidePlayer) {
                     this.drawing.text(curSidePlayer.name, centerPoint.x, centerPoint.y - 10, 'blue');
                     let playerStateText: string = '';
@@ -200,10 +203,12 @@ export class MultiGame extends Game implements MultiGameInterface {
                 }
                 break;
             case GameState.DELETED:
-                this.drawing.text('DELETED', centerPoint.x, centerPoint.y, 'blue');
+                this.drawing.statsText('DELETED', centerPoint.x, Drawing.canvasTopPadding / 2, 'blue', 'center');
+                // this.drawing.text('DELETED', centerPoint.x, centerPoint.y, 'blue');
                 break;
             case GameState.PLAY:
-
+                this.drawing.statsText('PLAY', centerPoint.x, Drawing.canvasTopPadding / 2, 'blue', 'center');
+                this.drawing.statsText(curSidePlayer.name, this.drawing.maxX - 1, Drawing.canvasTopPadding / 2, 'black', 'right');
                 this._drawStats();
                 this._drawSnakes();
                 this._drawGoods();
@@ -227,19 +232,21 @@ export class MultiGame extends Game implements MultiGameInterface {
     private _drawTime(): void {
         const start: Moment = moment.utc(this.game.startTime);
         const now: Moment = moment.utc(this.game.now);
-        this.drawing.text(`Time: ${moment.utc().startOf('day').seconds(now.diff(start, 'seconds')).format('LT')}`, 20, 0);
+        this.drawing.statsText(`Time: ${moment.duration(now.diff(start), 'milliseconds')
+            .format('mm:ss', {trim: false})}`, 1, Drawing.canvasTopPadding / 4 * 1);
+    }
+
+    private _drawSnakeInfo(): void {
+        this.drawing.statsText(`Points: ${this.game.snakes[this.curSidePlayer.uuid].points.length}`, 1, Drawing.canvasTopPadding / 4 * 3);
     }
 
     private _drawStats(): void {
+
         this._drawTime();
+        this._drawSnakeInfo();
     }
 
     private _drawSnakes(): void {
-        /*const snakeItem: SnakeItem = this.game.snakes[this.curSidePlayer.uuid];
-        const points: PointItem[] = snakeItem.points;
-        points.forEach((pointItem: PointItem) => {
-            new BodyPoint(this, {x: pointItem.x, y: pointItem.y, direction: pointItem.direction}).draw();
-        });*/
         new Snake(this, this.game.snakes[this.curSidePlayer.uuid].points).draw();
     }
 
