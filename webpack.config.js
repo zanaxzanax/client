@@ -15,7 +15,7 @@ module.exports = {
     },
     output: {
         filename: '[name].bundle.js',
-        path: path.resolve(__dirname, './../server-snake/dist/public')
+        path: path.resolve(__dirname, './../dist/public')
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.jsx'],

@@ -164,8 +164,9 @@ export class SingleGame extends Game {
         }
     }
 
+
+
     private _startMovement(): void {
-        debugger
         this.interval = setInterval(() => {
             this.tick();
         }, (this.app.config.relativeSpeed || 1000) / this.speed);
