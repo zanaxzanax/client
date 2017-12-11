@@ -1,11 +1,14 @@
 import {AppListInterface, GameItem} from '../../types';
 import App from './app';
 import {AppType} from '../enums';
+import Socket from '../../socket';
+import {SocketInterface} from '../../types/socket';
 
 export default class AppList extends App implements AppListInterface {
 
     type: number = AppType.list;
     games: GameItem[] = [];
+    socket: SocketInterface;
 
     initialize(elem: HTMLElement): Promise<boolean> {
 
@@ -13,8 +16,11 @@ export default class AppList extends App implements AppListInterface {
             return Promise.resolve(this.initialized);
         }
 
+        this.socket = new Socket(this);
+
         return Promise.resolve()
             .then(() => super.initialize(elem))
+            .then(() => this.socket.initialize())
             .catch((err) => {
                 console.error(err);
                 return false;

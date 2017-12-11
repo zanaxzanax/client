@@ -1,8 +1,8 @@
-import {AppInterface} from './app';
+import {AppMultiInterface, AppSingleInterface} from './app';
 import {PlayerInterface, PlayerItem} from './player';
 import {DrawingInterface} from './drawing';
 import {SnakeInterface, SnakeItem} from './snake';
-import {GoodPointInterface, PivotPointInterface, PointItem} from './point';
+import {GoodPointInterface, PivotPointInterface, PointInterface, PointItem} from './point';
 
 export interface GameItem {
     name: string;
@@ -18,59 +18,48 @@ export interface GameItem {
     uuid: string;
 }
 
-export interface GameEvent {
-    ts: number;
-    type: number;
-    data: any;
-    game?: string;
-    player?: string;
-}
-
-export interface GameStatistic {
-    snakePosition?: PointItem;
-    pastTime?: number;
-}
-
 export interface GameInterface {
-    app: AppInterface;
-    state: number;
+    app: any;
     player: PlayerInterface;
     snake: SnakeInterface;
     drawing: DrawingInterface;
-    speed: number;
-    interval: any;
+    centerPoint: PointInterface;
+    game: any;
     keyPressHandler: any;
-    type: number;
-    pivots: PivotPointInterface[];
-    good: GoodPointInterface;
-    localEvents: GameEvent[];
-    statistic: GameStatistic;
-    startTime: number;
-    endTime: number;
     initialized: boolean;
-    //setState: (state: number) => void;
     initialize: (game?: GameItem) => boolean;
+    drawStats: () => void;
+    redraw: () => void;
+    bindEvents: (bool: boolean) => void;
+    ready: () => void;
+    drawSnakeInfo: () => void;
+    drawTime: () => void;
+    drawGameState: () => void;
+    addPivotPoint: (data: PointItem) => void;
+}
+
+export interface SingleGameInterface extends GameInterface {
+    app: AppSingleInterface;
+    game: GameInterface;
+    good: GoodPointInterface;
+    state: number;
+    speed: number;
+    rule: number;
+    startTime: number;
+    interval: any;
+    now: number;
+    endTime: number;
     start: () => void;
     stop: () => void;
-    processEvents: (events: GameEvent[]) => void;
-    randomInteger: (min, max) => number;
-    getRandomX: () => number;
-    getRandomY: () => number;
-    addGoods: () => void;
-    drawStats: () => void;
-    updateStats: () => void;
-    isWin: () => boolean;
-    isGameOver: () => boolean;
+    tick: () => void;
     cleanPivots: () => void;
-    redraw: () => void;
-    startMovement: () => void;
-    stopMovement: () => void;
-    tick: (events: GameEvent[]) => void;
-    addPivotPoint: (data: PointItem) => void;
-    bindEvents: (bool: boolean) => void;
+    addGoods: () => void;
+    isGameOver: () => boolean;
+    pivots: PivotPointInterface[];
 }
 
 export interface MultiGameInterface extends GameInterface {
+    app: AppMultiInterface;
     uuid: string;
     game: GameItem;
     opponentSnake: SnakeInterface;
@@ -78,8 +67,4 @@ export interface MultiGameInterface extends GameInterface {
     drawingRight: DrawingInterface;
     updateGame: (game: GameItem) => void;
     removeGame: () => void;
-}
-
-export interface SingleGameInterface extends GameInterface {
-    drawing: DrawingInterface;
 }

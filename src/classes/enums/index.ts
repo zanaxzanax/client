@@ -4,7 +4,6 @@ export enum AppType {
     multiplayer
 }
 
-
 export enum PivotPointType {
     UP,
     DOWN,
@@ -22,12 +21,12 @@ export enum GameState {
     CREATED, PLAY, DONE, DELETED
 }
 
-export enum GameTypes {
-    SINGLE, MULTIPLAYER
-}
-
 export enum GameEventType {
     PIVOT, TICK
+}
+
+export enum GameRule {
+    WALL_THROW, SIMPLE
 }
 
 export enum GameSide {
@@ -35,5 +34,6 @@ export enum GameSide {
 }
 
 export enum PlayerState {
-    NOT_READY, READY, WINNER, LOSER
+    NOT_READY, READY, WINNER, LOSER, DRAW
 }
+

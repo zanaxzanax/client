@@ -11,6 +11,11 @@ export interface DrawElement {
 
 export interface DrawingInterface {
     app: AppInterface;
+    canvasHeight: number;
+    canvasWidth: number;
+    canvasTopPadding: number;
+    canvasResolutionHeight: number;
+    canvasResolutionWidth: number;
     stepVertical: number;
     stepHorizontal: number;
     canvasContext: CanvasRenderingContext2D;

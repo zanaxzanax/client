@@ -1,30 +1,29 @@
 import {
     AppMultiInterface,
     DrawingInterface,
-    GameEvent,
     GameItem,
     MultiGameInterface,
     PlayerInterface,
-    PointInterface,
-    PointItem
+    PointItem,
+    SnakeInterface
 } from '../../types';
 import {Drawing} from '../drawing';
 import Player from './player';
 import * as _ from 'lodash';
-import * as moment from 'moment';
-import {Moment} from 'moment';
 import {Game} from './game';
 import {GameSide, GameState, PlayerState} from '../enums';
 import Snake from './snake';
 import GoodPoint from './good-point';
 
 export class MultiGame extends Game implements MultiGameInterface {
+
     uuid: string;
     game: GameItem;
     player: PlayerInterface;
     opponent: PlayerInterface;
     drawingLeft: DrawingInterface;
     drawingRight: DrawingInterface;
+    opponentSnake: SnakeInterface;
 
     private curSide: GameSide;
 
@@ -93,7 +92,6 @@ export class MultiGame extends Game implements MultiGameInterface {
     }
 
     updateGame(game: GameItem): void {
-        // join
         console.log('updateGame', game);
         this.game = game;
         this.state = this.game.state;
@@ -108,12 +106,14 @@ export class MultiGame extends Game implements MultiGameInterface {
         this.updateGame(this.game);
     }
 
-    tick(events: GameEvent[]): void {
-        this.processEvents(events);
+    ready(): void {
+        this.app.socket.socket.emit('ready', this.uuid);
     }
 
     addPivotPoint(data: PointItem): void {
-        this.app.socket.socket.emit('pivot', _.extend({}, data, {uuid: this.uuid}));
+        if (this.game.state === GameState.PLAY) {
+            this.app.socket.socket.emit('pivot', _.extend({}, data, {uuid: this.uuid}));
+        }
     }
 
     private _extractItems(game: GameItem): void {
@@ -146,73 +146,64 @@ export class MultiGame extends Game implements MultiGameInterface {
     private _redraw(): void {
 
         this.drawing.clear();
-
         this.drawing.drawField();
 
-        const centerPoint: PointInterface = this.drawing.center;
         const curSidePlayer: PlayerInterface = this.curSidePlayer;
         const curSideOpponent: PlayerInterface = this.curSideOpponent;
 
         switch (this.state) {
             case GameState.CREATED:
-                console.log('GameState.CREATED');
-                this.drawing.statsText('WAITING', centerPoint.x, Drawing.canvasTopPadding / 2, 'blue', 'center');
+                this.drawGameState();
                 if (this._isMainSide()) {
                     if (curSidePlayer) {
-                        this.drawing.text(curSidePlayer.name, centerPoint.x, centerPoint.y - 10, 'blue');
+                        this.drawing.text(curSidePlayer.name, this.centerPoint.x, this.centerPoint.y - 10, 'blue');
                         if (!curSidePlayer.isReady()) {
-                            this.drawing.drawButton(centerPoint.x, centerPoint.y, Drawing.canvasWidth / 2,
-                                Drawing.canvasHeight / 10, 'READY', 'blue', (event: Event) => {
-                                    this._ready();
-                                });
+                            this.drawing.drawButton(this.centerPoint.x, this.centerPoint.y, this.drawing.canvasWidth / 2,
+                                this.drawing.canvasHeight / 10, Game.langPlayerState[PlayerState.READY], 'blue',
+                                (event: Event) => this.ready());
                         } else {
-                            this.drawing.text('READY', centerPoint.x, centerPoint.y);
+                            this.drawing.text(Game.langPlayerState[PlayerState.READY],
+                                this.centerPoint.x, this.centerPoint.y);
                         }
                     } else {
-                        this.drawing.text('RELOAD PAGE', centerPoint.x, centerPoint.y);
+                        this.drawing.text('RELOAD PAGE', this.centerPoint.x, this.centerPoint.y);
                     }
                 } else {
                     if (curSidePlayer) {
-                        this.drawing.text(curSidePlayer.name, centerPoint.x, centerPoint.y - 10, 'blue');
-                        this.drawing.text(PlayerState[curSidePlayer.state], centerPoint.x, centerPoint.y);
+                        this.drawing.text(curSidePlayer.name, this.centerPoint.x, this.centerPoint.y - 10, 'blue');
+                        this.drawing.text(PlayerState[curSidePlayer.state], this.centerPoint.x, this.centerPoint.y);
                     } else {
-                        this.drawing.text('WAITING', centerPoint.x, centerPoint.y);
+                        this.drawing.text('WAITING', this.centerPoint.x, this.centerPoint.y);
                     }
                 }
                 break;
             case GameState.DONE:
-
-                this._drawStats();
-
-                this.drawing.statsText('GAME OVER', centerPoint.x, Drawing.canvasTopPadding / 2, 'blue', 'center');
-                //this.drawing.statsText('PLAY', this.drawing.maxX - 1, Drawing.canvasTopPadding / 2, 'black', 'right');
+                this.drawStats();
+                this.drawGameState();
                 if (curSidePlayer) {
-                    this.drawing.text(curSidePlayer.name, centerPoint.x, centerPoint.y - 10, 'blue');
+                    this.drawing.text(curSidePlayer.name, this.centerPoint.x, this.centerPoint.y - 10, 'blue');
                     let playerStateText: string = '';
-
                     if ((curSidePlayer.isWinner() && curSideOpponent.isWinner()) ||
                         (curSidePlayer.isLoser() && curSideOpponent.isLoser())) {
-                        playerStateText = 'DRAW';
+                        playerStateText = Game.langPlayerState[PlayerState.DRAW];
                     } else if (curSidePlayer.isLoser()) {
-                        playerStateText = 'LOSER';
+                        playerStateText = Game.langPlayerState[PlayerState.LOSER];
                     } else {
-                        playerStateText = 'WINNER';
+                        playerStateText = Game.langPlayerState[PlayerState.WINNER];
                     }
-
-                    this.drawing.text(playerStateText, centerPoint.x, centerPoint.y, 'blue');
+                    this.drawing.text(playerStateText, this.centerPoint.x, this.centerPoint.y, 'blue');
                 }
                 break;
             case GameState.DELETED:
-                this.drawing.statsText('DELETED', centerPoint.x, Drawing.canvasTopPadding / 2, 'blue', 'center');
-                // this.drawing.text('DELETED', centerPoint.x, centerPoint.y, 'blue');
+                this.drawGameState();
                 break;
             case GameState.PLAY:
-                this.drawing.statsText('PLAY', centerPoint.x, Drawing.canvasTopPadding / 2, 'blue', 'center');
-                this.drawing.statsText(curSidePlayer.name, this.drawing.maxX - 1, Drawing.canvasTopPadding / 2, 'black', 'right');
-                this._drawStats();
-                this._drawSnakes();
-                this._drawGoods();
-
+                this.drawGameState();
+                this.drawing.statsText(curSidePlayer.name, this.drawing.maxX - 1,
+                    this.drawing.canvasTopPadding / 2, 'black', 'right');
+                this.drawStats();
+                this._drawSnake();
+                this._drawGood();
                 break;
             default:
                 break;
@@ -220,37 +211,14 @@ export class MultiGame extends Game implements MultiGameInterface {
     }
 
     private _join(uuid: string): void {
-        console.log('_join', uuid)
         this.app.socket.socket.emit('join', uuid);
     }
 
-    private _ready(): void {
-        console.log('_ready')
-        this.app.socket.socket.emit('ready', this.uuid);
-    }
-
-    private _drawTime(): void {
-        const start: Moment = moment.utc(this.game.startTime);
-        const now: Moment = moment.utc(this.game.now);
-        this.drawing.statsText(`Time: ${moment.duration(now.diff(start), 'milliseconds')
-            .format('mm:ss', {trim: false})}`, 1, Drawing.canvasTopPadding / 4 * 1);
-    }
-
-    private _drawSnakeInfo(): void {
-        this.drawing.statsText(`Points: ${this.game.snakes[this.curSidePlayer.uuid].points.length}`, 1, Drawing.canvasTopPadding / 4 * 3);
-    }
-
-    private _drawStats(): void {
-
-        this._drawTime();
-        this._drawSnakeInfo();
-    }
-
-    private _drawSnakes(): void {
+    private _drawSnake(): void {
         new Snake(this, this.game.snakes[this.curSidePlayer.uuid].points).draw();
     }
 
-    private _drawGoods(): void {
+    private _drawGood(): void {
         new GoodPoint(this, this.game.goods[this.curSidePlayer.uuid]).draw();
     }
 }

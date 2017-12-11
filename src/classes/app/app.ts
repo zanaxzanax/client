@@ -1,16 +1,17 @@
 import * as _ from 'lodash';
-import Socket from '../../socket';
 import Player from '../game/player';
 import {AppInterface, PlayerInterface, SocketInterface} from './../../types';
 import {SocketConnectStatus} from './../enums';
+import {ConfigItem} from '../../types/config';
 
 export default class App implements AppInterface {
 
     initialized: boolean = false;
     elem: HTMLElement;
     SocketConnectStatus: number;
-    socket: SocketInterface;
     player: PlayerInterface;
+    socket: SocketInterface;
+    config: ConfigItem;
     type: number;
 
     initialize(elem: HTMLElement): Promise<boolean> {
@@ -20,16 +21,14 @@ export default class App implements AppInterface {
         }
 
         this.elem = elem;
-        this.socket = new Socket(this);
         (window as any).appSnake = this;
 
         return Promise.resolve()
-            .then(() => this.socket.initialize())
             .then(() => this._loadUser())
-            .then((player: PlayerInterface) => {
-                this._setPlayer(player);
-                return true;
-            });
+            .then((player: PlayerInterface) => this._setPlayer(player))
+            .then(() => this._loadConfig())
+            .then((config: ConfigItem) => this._setConfig(config))
+            .then(() => true);
     }
 
     onSocketError(err: any): void {
@@ -67,8 +66,16 @@ export default class App implements AppInterface {
         return this.request('/api/user').then((data: any) => new Player(data))
     }
 
-    private _setPlayer(userData: any): void {
-        this.player = new Player(userData);
+    private _loadConfig(): Promise<ConfigItem> {
+        return this.request('/api/config');
+    }
+
+    private _setPlayer(player: PlayerInterface): void {
+        this.player = player;
+    }
+
+    private _setConfig(config: ConfigItem): void {
+        this.config = config;
     }
 
     private _getCookie(cname) {

@@ -8,13 +8,14 @@ module.exports = {
         polyfills: 'polyfills.ts',
         list: 'list.ts',
         multiplayer: 'multiplayer.ts',
+        single: 'single.ts',
     },
     node: {
         fs: 'empty'
     },
     output: {
         filename: '[name].bundle.js',
-        path: path.resolve(__dirname, './../server/dist/public')
+        path: path.resolve(__dirname, './../server-snake/dist/public')
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.jsx'],

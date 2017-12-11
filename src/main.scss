@@ -1,6 +1,4 @@
 //@import '~bootstrap/scss/bootstrap';
-
-
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 
@@ -40,9 +38,12 @@ $font-size-base: 14px;
 //@import "~bootstrap/scss/carousel";
 //@import "~bootstrap/scss/utilities";
 
-.img-thumbnail {
-    padding: 0;
-    border-radius: 0;
+.text-center {
+    text-align: center;
+}
+
+.hidden {
+    display: none;
 }
 
 #connect-informer {
@@ -50,8 +51,8 @@ $font-size-base: 14px;
     top: 0;
     left: 0;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 10px;
+    height: 10px;
 
     &.success {
         background-color: $success;

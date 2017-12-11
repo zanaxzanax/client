@@ -2,12 +2,14 @@ import {PlayerInterface} from './player';
 import {SocketInterface} from './socket';
 import {GameItem, MultiGameInterface, SingleGameInterface} from './game';
 import {DrawingInterface} from './drawing';
+import {ConfigItem} from './config';
 
 export interface AppInterface {
     initialized: boolean;
+    config: ConfigItem,
     elem: HTMLElement;
-    SocketConnectStatus: number;
     socket: SocketInterface;
+    SocketConnectStatus: number;
     player: PlayerInterface;
     type: number;
     initialize: (elem: HTMLElement) => Promise<boolean>;
@@ -35,6 +37,7 @@ export interface AppListInterface extends AppInterface {
 export interface AppMultiInterface extends AppInterface {
     drawingLeft: DrawingInterface;
     drawingRight: DrawingInterface;
+    socket: SocketInterface;
     game: MultiGameInterface;
     updateGames: (games: GameItem[]) => void;
     removeGames: (uuids: string[]) => void;

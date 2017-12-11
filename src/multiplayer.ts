@@ -4,4 +4,6 @@ import AppMulti from './classes/app/app-multi';
 
 const app = new AppMulti();
 
-app.initialize(document.getElementById('app'));
+app.initialize(document.getElementById('app')).then(() => {
+    console.log('Initialized');
+}).catch(console.error);

@@ -1,219 +1,104 @@
 import {
     AppInterface,
     DrawingInterface,
-    GameEvent,
     GameInterface,
-    GameStatistic,
-    GoodPointInterface,
-    PivotPointInterface,
+    GameItem,
     PlayerInterface,
     PointInterface,
     PointItem,
     SnakeInterface
 } from '../../types';
-import PivotPoint from './pivot-point';
-import GoodPoint from './good-point';
-import {GameEventType, GameState, GameTypes, PivotPointType} from '../enums';
+import {GameState, PivotPointType, PlayerState} from '../enums';
+import {Drawing} from '../drawing';
+import * as moment from 'moment';
+import {Moment} from 'moment';
 
 export class Game implements GameInterface {
 
+    static langPlayerState: { [key: number]: string } = {
+        [PlayerState.NOT_READY]: 'НЕ ГОТОВ',
+        [PlayerState.READY]: 'ГОТОВ',
+        [PlayerState.WINNER]: 'ВЫИГРАЛ',
+        [PlayerState.LOSER]: 'ПРОИГРАЛ',
+        [PlayerState.DRAW]: 'НИЧЬЯ',
+    };
+
+    static langGameState: { [key: number]: string } = {
+        [GameState.CREATED]: 'ОЖИДАНИЕ',
+        [GameState.DONE]: 'ИГРА ЗАКОНЧЕНА',
+        [GameState.PLAY]: 'В ПРОЦЕССЕ',
+        [GameState.DELETED]: 'ИГРА УДАЛЕНА',
+    };
+
     uuid: string;
-    state: number;
+    state: number = GameState.CREATED;
     drawing: DrawingInterface;
     player: PlayerInterface;
-    app: AppInterface;
-    snake: SnakeInterface;
-    opponentSnake: SnakeInterface;
-    speed: number = 10;
+    app: any;
+    game: any;
     interval: any;
     keyPressHandler: any;
-    type: number = GameTypes.SINGLE;
-    pivots: PivotPointInterface[] = [];
-    good: GoodPointInterface;
-    localEvents: GameEvent[] = [];
-    statistic: GameStatistic;
-    startTime: number;
-    endTime: number;
     initialized: boolean;
+    snake: SnakeInterface;
 
     constructor(app: AppInterface) {
-
         this.app = app;
-        //this.state = GameState.CREATED;
-
-        this.keyPressHandler = this.onKeyPress.bind(this);
+        this.keyPressHandler = this._onKeyPress.bind(this);
     }
 
-    /*
-        setState(state: GameState): void {
-            this.state = state;
-        }*/
-
-    initialize(): boolean {
-
-        if (!this.initialized) {
-            this.player = this.app.player;
-            // this.snake = new Snake(this, {
-            //     length: 1
-            // });
-            this.statistic = {};
-
-            this.snake.draw();
-
-            //  this.setState(GameState.CREATED);
-        }
-
-        return this.initialized;
+    get centerPoint(): PointInterface {
+        return this.drawing.center;
     }
 
-    start(): void {
-        this.state = GameState.PLAY;
-        this.startTime = Date.now();
-        this.startMovement();
-        this.bindEvents(true);
+    initialize(game?: GameItem): boolean {
+        return true;
     }
 
-    stop(): void {
-        this.bindEvents(false);
-        this.stopMovement();
-    }
-
-    processEvents(events: GameEvent[]): void {
-
-        /* const eventsSliced: GameEvent[] = events.slice();
-         events.length = 0;*/
-
-        events.forEach((event: GameEvent) => {
-            switch (event.type) {
-                case GameEventType.PIVOT:
-                    event.data = event.data as PointItem;
-                    this.pivots.push(new PivotPoint(this, {
-                        x: event.data.x,
-                        y: event.data.y,
-                        direction: event.data.direction
-                    }));
-                    break;
-                case GameEventType.TICK:
-                    this.snake.move();
-                    break;
-                default:
-                    break;
-            }
-        });
-    }
-
-    randomInteger(min, max): number {
-        let rand = min + Math.random() * (max + 1 - min);
-        rand = Math.floor(rand);
-        return rand;
-    }
-
-    getRandomX(): number {
-        return this.randomInteger(0, this.drawing.maxX - 1);
-    }
-
-    getRandomY(): number {
-        return this.randomInteger(0, this.drawing.maxY - 1);
-    }
-
-    addGoods(): void {
-        if (!this.good || this.good.isEaten()) {
-            this.good = new GoodPoint(this, {x: this.getRandomX(), y: this.getRandomY()});
-        }
-    }
-
-    drawStats(): void {
-        this.drawing.text(`Snake position: x${this.statistic.snakePosition.x} y ${this.statistic.snakePosition.y}`, 0, 0);
-        this.drawing.text(`Time: ${this.statistic.pastTime.toFixed(0)}`, 20, 0);
-    }
-
-    updateStats(): void {
-        const curTime: number = Date.now();
-        //this.statistic.snakePosition = this.snake.headPoint.toPoint();
-        this.statistic.pastTime = (curTime - this.startTime) / 1000;
-    }
-
-    tick(events: GameEvent[]): void {
-
-        this.processEvents(events);
-
-        this.localEvents.length = 0;
-
-        this.addGoods();
-
-        this.cleanPivots();
-
-        this.updateStats();
-
-        // if (this.isGameOver()) {
-        //     this.state = GameState.LOSE;
-        //     this.stop();
-        // } else if (this.isWin()) {
-        //     this.state = GameState.WIN;
-        //     this.stop();
-        // }
-
-        this.redraw();
-    }
-
-    isWin(): boolean {
-        return false;
-    }
-
-    isGameOver(): boolean {
-        return this.snake.headPoint.x > this.drawing.maxX ||
-            this.snake.headPoint.y > this.drawing.maxY ||
-            this.snake.headPoint.y < 0 || this.snake.headPoint.x < 0 ||
-            this.snake.isSelfHit();
-    }
-
-    cleanPivots(): void {
-        const pivots = this.pivots.slice();
-        const snakePoints = this.snake.points;
-        this.pivots.length = 0;
-        pivots.forEach((pivot: PivotPoint) => {
-            if (snakePoints.find((point: PointInterface) => {
-                    return point.x === pivot.x && point.y === pivot.y;
-                })) {
-                this.pivots.push(pivot);
-            }
-        });
+    ready(): void {
+        //
     }
 
     redraw(): void {
+        //
+    }
 
-        this.drawing.clear();
+    drawGameState(): void {
+        this.drawing.statsText(Game.langGameState[this.state], this.centerPoint.x, this.drawing.canvasTopPadding / 2, 'blue', 'center');
+    }
 
-        switch (this.state) {
-            case GameState.CREATED:
-                console.log('GameState.CREATED');
-                const centerPoint: PointInterface = this.drawing.center;
-                // this.drawing.drawButton(centerPoint.x, centerPoint.y, Drawing.canvasWidth / 2, Drawing.canvasHeight / 10, 'sadasd', 'red');
-                break;
-            // case GameState.WIN:
-            //     break;
-            // case GameState.LOSE:
-            //     break;
-            case GameState.PLAY:
+    addPivotPoint(data: PointItem) {
+        //
+    }
 
-                this.good.draw();
+    drawTime(): void {
+        const start: Moment = moment.utc(this.game.startTime);
+        const now: Moment = moment.utc(this.game.now);
+        this.drawing.statsText(`Time: ${moment.duration(now.diff(start), 'milliseconds')
+            .format('mm:ss', {trim: false})}`, 1, this.drawing.canvasTopPadding / 4);
+    }
 
-                this.pivots.forEach((pivot: PivotPoint) => {
-                    pivot.draw();
-                });
+    drawSnakeInfo(): void {
+        this.drawing.statsText(`Points: ${this.game.snake.points.length}`, 1, this.drawing.canvasTopPadding / 4 * 3);
+    }
 
-                this.drawStats();
+    drawStats(): void {
+        this.drawTime();
+        this.drawSnakeInfo();
+    }
 
-                this.snake.draw();
-
-                break;
-            default:
-                break;
+    bindEvents(bool: boolean) {
+        if (bool) {
+            this.bindEvents(false);
+            document.addEventListener('keydown', this.keyPressHandler, false);
+        } else {
+            document.removeEventListener('keydown', this.keyPressHandler);
         }
     }
 
-    onKeyPress(event: KeyboardEvent) {
+    private _onKeyPress(event: KeyboardEvent) {
+
         let direction;
+        console.log(event);
 
         switch (event.which) {
             case 37:
@@ -249,33 +134,6 @@ export class Game implements GameInterface {
                 y: this.snake.headPoint.y,
                 direction
             });
-        }
-    }
-
-    addPivotPoint(data: PointItem) {
-        this.localEvents.push({
-            ts: Date.now(),
-            type: GameEventType.PIVOT,
-            data
-        });
-    }
-
-    startMovement(): void {
-        this.interval = setInterval(() => {
-            this.tick(this.localEvents);
-        }, 1000 / this.speed);
-    }
-
-    stopMovement(): void {
-        clearInterval(this.interval);
-    }
-
-    bindEvents(bool: boolean) {
-        if (bool) {
-            this.bindEvents(false);
-            document.addEventListener('keydown', this.keyPressHandler, false);
-        } else {
-            document.removeEventListener('keydown', this.keyPressHandler);
         }
     }
 }

@@ -1,6 +1,9 @@
 import './main.scss';
-import App from './classes/app/app';
+import 'moment-duration-format';
+import AppSingle from './classes/app/app-single';
 
-const app = new App();
+const app = new AppSingle();
 
-app.initialize(document.getElementById('app'));
+app.initialize(document.getElementById('app')).then(() => {
+    console.log('Initialized');
+}).catch(console.error);

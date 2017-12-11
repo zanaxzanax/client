@@ -3,6 +3,7 @@ import {MultiGame} from '../game';
 import App from './app';
 import {AppMultiInterface, DrawingInterface, GameItem, MultiGameInterface} from '../../types';
 import {AppType} from '../enums';
+import Socket from '../../socket';
 
 export default class AppMulti extends App implements AppMultiInterface {
 
@@ -20,9 +21,11 @@ export default class AppMulti extends App implements AppMultiInterface {
         this.drawingLeft = new Drawing(this);
         this.drawingRight = new Drawing(this);
         this.game = new MultiGame(this);
+        this.socket = new Socket(this);
 
         return Promise.resolve()
             .then(() => super.initialize(elem))
+            .then(() => this.socket.initialize())
             .then(() => {
                 this.drawingLeft.initialize(document.getElementById('fieldLeft') as HTMLCanvasElement);
                 this.drawingRight.initialize(document.getElementById('fieldRight') as HTMLCanvasElement);
@@ -40,7 +43,7 @@ export default class AppMulti extends App implements AppMultiInterface {
 
     onSocketDisconnect(arg: any): void {
         super.onSocketDisconnect(arg);
-
+        // TODO
     }
 
     updateGames(games: GameItem[]): void {
