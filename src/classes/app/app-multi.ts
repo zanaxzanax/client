@@ -59,12 +59,7 @@ export default class AppMulti extends App implements AppMultiInterface {
         }
     }
 
-    private _getUUID(): string {
-        const split: string[] = window.location.pathname.split('/');
-        return split[split.length - 1];
-    }
-
     private _loadGameItem(): Promise<GameItem> {
-        return this.request(`/api/game/${this._getUUID()}`);
+        return this.request(`/api/game/${this.getUUID()}`);
     }
 }

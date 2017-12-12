@@ -2,14 +2,12 @@ import {
     AppInterface,
     DrawingInterface,
     GameInterface,
-    GameItem,
     PlayerInterface,
     PointInterface,
     PointItem,
     SnakeInterface
 } from '../../types';
 import {GameState, PivotPointType, PlayerState} from '../enums';
-import {Drawing} from '../drawing';
 import * as moment from 'moment';
 import {Moment} from 'moment';
 
@@ -28,6 +26,11 @@ export class Game implements GameInterface {
         [GameState.DONE]: 'ИГРА ЗАКОНЧЕНА',
         [GameState.PLAY]: 'В ПРОЦЕССЕ',
         [GameState.DELETED]: 'ИГРА УДАЛЕНА',
+    };
+
+    static langOther: { [key: string]: string } = {
+        WAITING: 'ОЖИДАНИЕ',
+        ERROR: 'ОБНОВИТЕ СТРАНИЦУ'
     };
 
     uuid: string;
@@ -50,7 +53,7 @@ export class Game implements GameInterface {
         return this.drawing.center;
     }
 
-    initialize(game?: GameItem): boolean {
+    initialize(game?: any): boolean {
         return true;
     }
 
@@ -78,7 +81,7 @@ export class Game implements GameInterface {
     }
 
     drawSnakeInfo(): void {
-        this.drawing.statsText(`Points: ${this.game.snake.points.length}`, 1, this.drawing.canvasTopPadding / 4 * 3);
+        this.drawing.statsText(`Points: ${this.snake.points.length}`, 1, this.drawing.canvasTopPadding / 4 * 3);
     }
 
     drawStats(): void {

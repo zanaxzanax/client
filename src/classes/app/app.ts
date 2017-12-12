@@ -62,6 +62,11 @@ export default class App implements AppInterface {
         return this._getCookie('token');
     }
 
+    getUUID(): string {
+        const split: string[] = window.location.pathname.split('/');
+        return split[split.length - 1];
+    }
+
     private _loadUser(): Promise<PlayerInterface> {
         return this.request('/api/user').then((data: any) => new Player(data))
     }

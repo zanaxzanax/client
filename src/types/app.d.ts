@@ -18,6 +18,7 @@ export interface AppInterface {
     onSocketConnect: (arg) => void;
     request: (url: string, options?: object) => Promise<any>;
     getToken: () => string;
+    getUUID: () => string;
 }
 
 export interface AppListInterface extends AppInterface {

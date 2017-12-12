@@ -10,7 +10,7 @@ import {
     SnakeOptions
 } from '../../types';
 import BodyPoint from './body-point';
-import {PivotPointType} from '../enums';
+import {GameRule, PivotPointType} from '../enums';
 
 export default class Snake implements SnakeInterface {
 
@@ -100,6 +100,21 @@ export default class Snake implements SnakeInterface {
                     break;
                 default:
                     break;
+            }
+
+            if ((this.game as SingleGameInterface).rule === GameRule.WALL_THROW) {
+                if (point.x > this.game.drawing.maxX) {
+                    point.x = 0;
+                }
+                if (point.x < 0) {
+                    point.x = this.game.drawing.maxX;
+                }
+                if (point.y > this.game.drawing.maxY) {
+                    point.y = 0;
+                }
+                if (point.y < 0) {
+                    point.y = this.game.drawing.maxY;
+                }
             }
 
             if (this.points.indexOf(point) === 0) { // is head

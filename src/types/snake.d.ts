@@ -15,7 +15,7 @@ export interface SnakeItem {
 }
 
 export interface SnakeInterface {
-    game: GameInterface
+    game: GameInterface;
     headPoint: BodyPointInterface;
     lastPoint: BodyPointInterface;
     points: BodyPointInterface[];

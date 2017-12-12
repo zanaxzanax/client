@@ -4,10 +4,10 @@ import {
     GameItem,
     MultiGameInterface,
     PlayerInterface,
+    PlayerItem,
     PointItem,
     SnakeInterface
 } from '../../types';
-import {Drawing} from '../drawing';
 import Player from './player';
 import * as _ from 'lodash';
 import {Game} from './game';
@@ -116,6 +116,11 @@ export class MultiGame extends Game implements MultiGameInterface {
         }
     }
 
+    drawSnakeInfo(): void {
+        this.drawing.statsText(`Points: ${ this.game.snakes[this.curSidePlayer.uuid].points.length}`, 1,
+            this.drawing.canvasTopPadding / 4 * 3);
+    }
+
     private _extractItems(game: GameItem): void {
         const slots = game.slots;
         const snakes = game.snakes;
@@ -123,7 +128,7 @@ export class MultiGame extends Game implements MultiGameInterface {
         this.opponent = null;
         this.snake = null;
         this.opponentSnake = null;
-        slots.forEach((player: PlayerInterface) => {
+        slots.forEach((player: PlayerItem) => {
             if (player.uuid === this.app.player.uuid) {
                 this.player = new Player(player);
             } else {
@@ -153,31 +158,34 @@ export class MultiGame extends Game implements MultiGameInterface {
 
         switch (this.state) {
             case GameState.CREATED:
+                console.log('GameState.CREATED');
                 this.drawGameState();
                 if (this._isMainSide()) {
                     if (curSidePlayer) {
                         this.drawing.text(curSidePlayer.name, this.centerPoint.x, this.centerPoint.y - 10, 'blue');
                         if (!curSidePlayer.isReady()) {
-                            this.drawing.drawButton(this.centerPoint.x, this.centerPoint.y, this.drawing.canvasWidth / 2,
-                                this.drawing.canvasHeight / 10, Game.langPlayerState[PlayerState.READY], 'blue',
-                                (event: Event) => this.ready());
+                            this.drawing.drawButton(this.centerPoint.x, this.centerPoint.y,
+                                this.drawing.canvasWidth / 2, this.drawing.canvasHeight / 10,
+                                Game.langPlayerState[PlayerState.READY], 'blue', (event: Event) => this.ready());
                         } else {
                             this.drawing.text(Game.langPlayerState[PlayerState.READY],
                                 this.centerPoint.x, this.centerPoint.y);
                         }
                     } else {
-                        this.drawing.text('RELOAD PAGE', this.centerPoint.x, this.centerPoint.y);
+                        this.drawing.text(Game.langOther.ERROR, this.centerPoint.x, this.centerPoint.y);
                     }
                 } else {
                     if (curSidePlayer) {
                         this.drawing.text(curSidePlayer.name, this.centerPoint.x, this.centerPoint.y - 10, 'blue');
-                        this.drawing.text(PlayerState[curSidePlayer.state], this.centerPoint.x, this.centerPoint.y);
+                        this.drawing.text(Game.langPlayerState[curSidePlayer.state],
+                            this.centerPoint.x, this.centerPoint.y);
                     } else {
-                        this.drawing.text('WAITING', this.centerPoint.x, this.centerPoint.y);
+                        this.drawing.text(Game.langOther.WAITING, this.centerPoint.x, this.centerPoint.y);
                     }
                 }
                 break;
             case GameState.DONE:
+                console.log('GameState.DONE');
                 this.drawStats();
                 this.drawGameState();
                 if (curSidePlayer) {
@@ -186,18 +194,20 @@ export class MultiGame extends Game implements MultiGameInterface {
                     if ((curSidePlayer.isWinner() && curSideOpponent.isWinner()) ||
                         (curSidePlayer.isLoser() && curSideOpponent.isLoser())) {
                         playerStateText = Game.langPlayerState[PlayerState.DRAW];
-                    } else if (curSidePlayer.isLoser()) {
-                        playerStateText = Game.langPlayerState[PlayerState.LOSER];
-                    } else {
+                    } else if (curSidePlayer.isWinner()) {
                         playerStateText = Game.langPlayerState[PlayerState.WINNER];
+                    } else {
+                        playerStateText = Game.langPlayerState[PlayerState.LOSER];
                     }
                     this.drawing.text(playerStateText, this.centerPoint.x, this.centerPoint.y, 'blue');
                 }
                 break;
             case GameState.DELETED:
+                console.log('GameState.DELETED');
                 this.drawGameState();
                 break;
             case GameState.PLAY:
+                console.log('GameState.PLAY');
                 this.drawGameState();
                 this.drawing.statsText(curSidePlayer.name, this.drawing.maxX - 1,
                     this.drawing.canvasTopPadding / 2, 'black', 'right');

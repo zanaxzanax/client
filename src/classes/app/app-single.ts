@@ -1,4 +1,4 @@
-import {AppInterface, AppSingleInterface, DrawingInterface, SingleGameInterface} from '../../types';
+import {AppSingleInterface, DrawingInterface, GameSingleItem, SingleGameInterface} from '../../types';
 import App from './app';
 import {Drawing} from '../drawing';
 import {SingleGame} from '../game';
@@ -21,13 +21,18 @@ export default class AppSingle extends App implements AppSingleInterface {
 
         return Promise.resolve()
             .then(() => super.initialize(elem))
-            .then(() => {
+            .then(() => this._loadGameItem())
+            .then((game: GameSingleItem) => {
                 this.drawing.initialize(document.getElementById('field') as HTMLCanvasElement);
-                this.game.initialize();
+                this.game.initialize(game);
                 return true;
             }).catch((err) => {
                 console.error(err);
                 return false;
             });
+    }
+
+    private _loadGameItem(): Promise<GameSingleItem> {
+        return this.request(`/api/game/${this.getUUID()}`);
     }
 }

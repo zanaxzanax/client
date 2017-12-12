@@ -18,6 +18,14 @@ export interface GameItem {
     uuid: string;
 }
 
+export interface GameSingleItem {
+    name?: string;
+    speed: number;
+    rule: number;
+    uuid: string;
+    type: number;
+}
+
 export interface GameInterface {
     app: any;
     player: PlayerInterface;
@@ -27,7 +35,7 @@ export interface GameInterface {
     game: any;
     keyPressHandler: any;
     initialized: boolean;
-    initialize: (game?: GameItem) => boolean;
+    initialize: (game?: any) => boolean;
     drawStats: () => void;
     redraw: () => void;
     bindEvents: (bool: boolean) => void;

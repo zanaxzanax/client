@@ -1,7 +1,7 @@
 import {Game} from './game';
 import {
     AppSingleInterface,
-    GameItem,
+    GameSingleItem,
     GoodPointInterface,
     PivotPointInterface,
     PointInterface,
@@ -10,7 +10,6 @@ import {
 } from '../../types';
 import {GameRule, GameState, PivotPointType, PlayerState} from '../enums';
 import PivotPoint from './pivot-point';
-import {Drawing} from '../drawing';
 import GoodPoint from './good-point';
 import Snake from './snake';
 
@@ -33,11 +32,11 @@ export class SingleGame extends Game {
         return this;
     }
 
-    initialize(game?: GameItem): boolean {
+    initialize(game?: GameSingleItem): boolean {
         if (!this.initialized) {
             this.player = this.app.player;
-            this.speed = parseInt(document.getElementById('speed').innerHTML, 10) || 4;
-            this.rule = parseInt(document.getElementById('rule').innerHTML, 10) || GameRule.WALL_THROW;
+            this.speed = game.speed || 4;
+            this.rule = game.rule || GameRule.WALL_THROW;
             this.redraw();
             this.initialized = true;
         }
@@ -129,27 +128,22 @@ export class SingleGame extends Game {
         switch (this.state) {
             case GameState.CREATED:
                 this.drawGameState();
-                if (this.player) {
-                    this.drawing.text(this.player.name, this.centerPoint.x, this.centerPoint.y - 10, 'blue');
-                    if (!this.player.isReady()) {
-                        this.drawing.drawButton(this.centerPoint.x, this.centerPoint.y, this.drawing.canvasWidth / 2,
-                            this.drawing.canvasHeight / 10, Game.langPlayerState[PlayerState.READY], 'blue',
-                            (event: Event) => this.ready());
-                    } else {
-                        this.drawing.text('READY', this.centerPoint.x, this.centerPoint.y);
-                    }
+                this.drawing.text(this.player.name, this.centerPoint.x, this.centerPoint.y - 10, 'blue');
+                if (!this.player.isReady()) {
+                    this.drawing.drawButton(this.centerPoint.x, this.centerPoint.y, this.drawing.canvasWidth / 2,
+                        this.drawing.canvasHeight / 10, Game.langPlayerState[PlayerState.READY], 'blue',
+                        (event: Event) => this.ready());
                 } else {
-                    this.drawing.text('RELOAD PAGE', this.centerPoint.x, this.centerPoint.y);
+                    this.drawing.text(Game.langPlayerState[PlayerState.READY],
+                        this.centerPoint.x, this.centerPoint.y);
                 }
                 break;
             case GameState.DONE:
                 this.drawStats();
                 this.drawGameState();
-                if (this.player) {
-                    this.drawing.text(this.player.name, this.centerPoint.x, this.centerPoint.y - 10, 'blue');
-                    this.drawing.text(Game.langPlayerState[this.player.state], this.centerPoint.x,
-                        this.centerPoint.y, 'blue');
-                }
+                this.drawing.text(this.player.name, this.centerPoint.x, this.centerPoint.y - 10, 'blue');
+                this.drawing.text(Game.langPlayerState[this.player.state], this.centerPoint.x,
+                    this.centerPoint.y, 'blue');
                 break;
             case GameState.PLAY:
                 this.drawGameState();
@@ -163,8 +157,6 @@ export class SingleGame extends Game {
                 break;
         }
     }
-
-
 
     private _startMovement(): void {
         this.interval = setInterval(() => {

@@ -158,7 +158,7 @@ export class Drawing implements DrawingInterface {
         this.elem.addEventListener('click', (event: MouseEvent) => {
             const rect: ClientRect = this.elem.getBoundingClientRect();
             const x: number = event.pageX - rect.left;
-            const y: number = event.pageY - rect.top + this.canvasTopPadding;
+            const y: number = event.pageY - rect.top;
             this.elements.forEach((element: DrawElement) => {
                 if (y > element.y && y < element.y + element.height
                     && x > element.x && x < element.x + element.width) {
