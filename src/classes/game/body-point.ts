@@ -3,6 +3,8 @@ import {BodyPointInterface, DrawingInterface, GameInterface, PointItem} from '..
 
 export default class BodyPoint extends Point implements BodyPointInterface {
 
+    static color: string = 'black';
+
     x: number;
     y: number;
     direction: number;
@@ -17,7 +19,7 @@ export default class BodyPoint extends Point implements BodyPointInterface {
     }
 
     draw(): void {
-        this.drawing.drawPointByCoordinates(this.x, this.y/*, this.snake.options.headColor*/);
+        this.drawing.drawPointByCoordinates(this.x, this.y, BodyPoint.color);
     }
 
     toJSON(): PointItem {
@@ -27,5 +29,4 @@ export default class BodyPoint extends Point implements BodyPointInterface {
             direction: this.direction
         }
     }
-
 }

@@ -9,7 +9,7 @@ export interface AppInterface {
     config: ConfigItem,
     elem: HTMLElement;
     socket: SocketInterface;
-    SocketConnectStatus: number;
+    socketConnectStatus: number;
     player: PlayerInterface;
     type: number;
     initialize: (elem: HTMLElement) => Promise<boolean>;
@@ -25,13 +25,7 @@ export interface AppListInterface extends AppInterface {
     games: GameItem[];
     removeGames: (uuids: string[]) => void;
     addGame: (options: GameItem) => void;
-    loadGames: () => Promise<GameItem[]>;
     removeGame: (uuid: string) => Promise<Response>;
-    getRowActions: (game: GameItem) => string;
-    getGameRow: (game: GameItem, i: number) => string;
-    getTableHead: () => string;
-    getTableBody: () => string;
-    drawGames: () => void;
     updateGames: (games: GameItem[]) => void;
 }
 

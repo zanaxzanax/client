@@ -14,15 +14,6 @@ import {GameRule, PivotPointType} from '../enums';
 
 export default class Snake implements SnakeInterface {
 
-    static defaults: SnakeOptions = {
-        length: 1,
-        startX: 0,
-        startY: 0,
-        direction: PivotPointType.RIGHT,
-        headColor: 'blue',
-        bodyColor: 'magenta',
-    };
-
     points: BodyPointInterface[] = [];
 
     constructor(public game: SingleGameInterface | MultiGameInterface, points: PointItem[]) {

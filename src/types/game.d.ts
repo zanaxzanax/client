@@ -43,6 +43,7 @@ export interface GameInterface {
     drawSnakeInfo: () => void;
     drawTime: () => void;
     drawGameState: () => void;
+    drawSpeed: () => void;
     addPivotPoint: (data: PointItem) => void;
 }
 

@@ -1,6 +1,5 @@
-import {AppInterface, DrawElement, DrawingInterface, PointInterface} from '../../types';
+import {AppInterface, ConfigItem, DrawElement, DrawingInterface, PointInterface} from '../../types';
 import Point from '../game/point';
-import {ConfigItem} from '../../types/config';
 
 export class Drawing implements DrawingInterface {
 
@@ -49,7 +48,7 @@ export class Drawing implements DrawingInterface {
         if (!this.initialized) {
             this.elem = elem;
             this._applyConfig(this.app.config);
-            this.prepareCanvas();
+            this._prepareCanvas();
             this._bindEvents();
             this.initialized = true;
         }
@@ -69,23 +68,6 @@ export class Drawing implements DrawingInterface {
             width,
             callback
         });
-    }
-
-    prepareCanvas(): void {
-        const canvasElem: HTMLCanvasElement = this.elem;
-        canvasElem.setAttribute('height', `${this.canvasHeight}px`);
-        canvasElem.setAttribute('width', `${this.canvasWidth}px`);
-
-        this.canvasContext = canvasElem.getContext('2d');
-        this.canvasContext.fillStyle = Drawing.canvasBgColor;
-        this.canvasContext.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-        this.stepHorizontal = (this.canvasWidth / this.canvasResolutionWidth);
-        this.stepVertical = (this.canvasHeight / (this.canvasResolutionHeight + this.canvasTopPadding));
-
-        this.setText('10px Arial');
-        this.canvasContext.textAlign = 'center';
-        this.canvasContext.textBaseline = 'middle';
     }
 
     statsText(text: string, x: number, y: number, color?: string, align?: string): void {
@@ -118,12 +100,9 @@ export class Drawing implements DrawingInterface {
 
     drawPointByCoordinates(x: number, y: number, color?: string): void {
         y += this.canvasTopPadding;
-        if (color) {
-            this.canvasContext.fillStyle = color;
-        }
         x *= this.stepHorizontal;
         y *= this.stepVertical;
-        this._drawPoint(x, y, this.stepHorizontal, this.stepVertical);
+        this._drawPoint(x, y, this.stepHorizontal, this.stepVertical, color);
     }
 
     drawField(): void {
@@ -131,7 +110,8 @@ export class Drawing implements DrawingInterface {
         this._drawDelimiter();
     }
 
-    private _drawPoint(fromX: number, fromY: number, width: number, height: number): void {
+    private _drawPoint(fromX: number, fromY: number, width: number, height: number, color?: string): void {
+        this.canvasContext.fillStyle = color || 'black';
         this.canvasContext.fillRect(fromX, fromY, width, height);
     }
 
@@ -175,5 +155,22 @@ export class Drawing implements DrawingInterface {
         this.canvasTopPadding = config.canvasTopPadding || 10;
         this.canvasResolutionHeight = config.fieldResolutionY || 100;
         this.canvasResolutionWidth = config.fieldResolutionX || 100;
+    }
+
+    private _prepareCanvas(): void {
+        const canvasElem: HTMLCanvasElement = this.elem;
+        canvasElem.setAttribute('height', `${this.canvasHeight}px`);
+        canvasElem.setAttribute('width', `${this.canvasWidth}px`);
+
+        this.canvasContext = canvasElem.getContext('2d');
+        this.canvasContext.fillStyle = Drawing.canvasBgColor;
+        this.canvasContext.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+        this.stepHorizontal = (this.canvasWidth / this.canvasResolutionWidth);
+        this.stepVertical = (this.canvasHeight / (this.canvasResolutionHeight + this.canvasTopPadding));
+
+        this.setText('10px Arial');
+        this.canvasContext.textAlign = 'center';
+        this.canvasContext.textBaseline = 'middle';
     }
 }

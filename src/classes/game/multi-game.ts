@@ -9,7 +9,7 @@ import {
     SnakeInterface
 } from '../../types';
 import Player from './player';
-import * as _ from 'lodash';
+import {extend} from 'lodash';
 import {Game} from './game';
 import {GameSide, GameState, PlayerState} from '../enums';
 import Snake from './snake';
@@ -25,7 +25,7 @@ export class MultiGame extends Game implements MultiGameInterface {
     drawingRight: DrawingInterface;
     opponentSnake: SnakeInterface;
 
-    private curSide: GameSide;
+    private _curSide: number;
 
     constructor(app: AppMultiInterface) {
         super(app);
@@ -34,7 +34,7 @@ export class MultiGame extends Game implements MultiGameInterface {
     }
 
     get drawing(): DrawingInterface {
-        switch (this.curSide) {
+        switch (this._curSide) {
             case GameSide.LEFT:
                 return this.drawingLeft;
             case GameSide.RIGHT:
@@ -45,7 +45,7 @@ export class MultiGame extends Game implements MultiGameInterface {
     }
 
     get curSidePlayer(): PlayerInterface {
-        switch (this.curSide) {
+        switch (this._curSide) {
             case GameSide.LEFT:
                 return this.player;
             case GameSide.RIGHT:
@@ -56,7 +56,7 @@ export class MultiGame extends Game implements MultiGameInterface {
     }
 
     get curSideOpponent(): PlayerInterface {
-        switch (this.curSide) {
+        switch (this._curSide) {
             case GameSide.LEFT:
                 return this.opponent;
             case GameSide.RIGHT:
@@ -67,12 +67,12 @@ export class MultiGame extends Game implements MultiGameInterface {
     }
 
     drawLeftSide() {
-        this.curSide = GameSide.LEFT;
+        this._curSide = GameSide.LEFT;
         this._redraw();
     }
 
     drawRightSide() {
-        this.curSide = GameSide.RIGHT;
+        this._curSide = GameSide.RIGHT;
         this._redraw();
     }
 
@@ -112,7 +112,7 @@ export class MultiGame extends Game implements MultiGameInterface {
 
     addPivotPoint(data: PointItem): void {
         if (this.game.state === GameState.PLAY) {
-            this.app.socket.socket.emit('pivot', _.extend({}, data, {uuid: this.uuid}));
+            this.app.socket.socket.emit('pivot', extend({}, data, {uuid: this.uuid}));
         }
     }
 
@@ -145,7 +145,7 @@ export class MultiGame extends Game implements MultiGameInterface {
     }
 
     private _isMainSide(): boolean {
-        return this.curSide === GameSide.LEFT;
+        return this._curSide === GameSide.LEFT;
     }
 
     private _redraw(): void {
@@ -158,7 +158,6 @@ export class MultiGame extends Game implements MultiGameInterface {
 
         switch (this.state) {
             case GameState.CREATED:
-                console.log('GameState.CREATED');
                 this.drawGameState();
                 if (this._isMainSide()) {
                     if (curSidePlayer) {
@@ -185,7 +184,6 @@ export class MultiGame extends Game implements MultiGameInterface {
                 }
                 break;
             case GameState.DONE:
-                console.log('GameState.DONE');
                 this.drawStats();
                 this.drawGameState();
                 if (curSidePlayer) {
@@ -203,14 +201,14 @@ export class MultiGame extends Game implements MultiGameInterface {
                 }
                 break;
             case GameState.DELETED:
-                console.log('GameState.DELETED');
                 this.drawGameState();
                 break;
             case GameState.PLAY:
-                console.log('GameState.PLAY');
                 this.drawGameState();
-                this.drawing.statsText(curSidePlayer.name, this.drawing.maxX - 1,
-                    this.drawing.canvasTopPadding / 2, 'black', 'right');
+                if (curSidePlayer) {
+                    this.drawing.statsText(curSidePlayer.name, this.drawing.maxX - 1,
+                        this.drawing.canvasTopPadding / 2, 'black', 'right');
+                }
                 this.drawStats();
                 this._drawSnake();
                 this._drawGood();

@@ -66,7 +66,8 @@ export class Game implements GameInterface {
     }
 
     drawGameState(): void {
-        this.drawing.statsText(Game.langGameState[this.state], this.centerPoint.x, this.drawing.canvasTopPadding / 2, 'blue', 'center');
+        this.drawing.statsText(Game.langGameState[this.state], this.centerPoint.x,
+            this.drawing.canvasTopPadding / 2, 'blue', 'center');
     }
 
     addPivotPoint(data: PointItem) {
@@ -84,9 +85,14 @@ export class Game implements GameInterface {
         this.drawing.statsText(`Points: ${this.snake.points.length}`, 1, this.drawing.canvasTopPadding / 4 * 3);
     }
 
+    drawSpeed(): void {
+        this.drawing.statsText(`Speed: ${this.game.speed}`, 1, this.drawing.canvasTopPadding / 4 * 2);
+    }
+
     drawStats(): void {
         this.drawTime();
         this.drawSnakeInfo();
+        this.drawSpeed();
     }
 
     bindEvents(bool: boolean) {
@@ -101,7 +107,6 @@ export class Game implements GameInterface {
     private _onKeyPress(event: KeyboardEvent) {
 
         let direction;
-        console.log(event);
 
         switch (event.which) {
             case 37:

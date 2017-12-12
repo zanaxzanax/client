@@ -3,7 +3,7 @@ import {DrawingInterface, GameInterface, GoodPointInterface, PointItem} from '..
 
 export default class GoodPoint extends Point implements GoodPointInterface {
 
-    static color: 'magenta';
+    static color: string = 'green';
 
     drawing: DrawingInterface;
     x: number;

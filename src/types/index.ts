@@ -5,3 +5,4 @@ export * from './player';
 export * from './socket';
 export * from './snake';
 export * from './point';
+export * from './config';

@@ -1,14 +1,13 @@
-import * as _ from 'lodash';
+import {extend} from 'lodash';
 import Player from '../game/player';
-import {AppInterface, PlayerInterface, SocketInterface} from './../../types';
-import {SocketConnectStatus} from './../enums';
-import {ConfigItem} from '../../types/config';
+import {AppInterface, ConfigItem, PlayerInterface, SocketInterface} from '../../types';
+import {SocketConnectStatus} from '../enums';
 
 export default class App implements AppInterface {
 
     initialized: boolean = false;
     elem: HTMLElement;
-    SocketConnectStatus: number;
+    socketConnectStatus: number;
     player: PlayerInterface;
     socket: SocketInterface;
     config: ConfigItem;
@@ -32,25 +31,22 @@ export default class App implements AppInterface {
     }
 
     onSocketError(err: any): void {
-        console.log('onSocketError', err);
-        this.SocketConnectStatus = SocketConnectStatus.error;
+        this.socketConnectStatus = SocketConnectStatus.error;
         this._toggleConnectInformerClass(true);
     }
 
     onSocketDisconnect(arg: any): void {
-        console.log('onSocketDisconnect', arg);
-        this.SocketConnectStatus = SocketConnectStatus.disconnected;
+        this.socketConnectStatus = SocketConnectStatus.disconnected;
         this._toggleConnectInformerClass(false, true);
     }
 
     onSocketConnect(arg: any): void {
-        console.log('onSocketConnect', arg);
-        this.SocketConnectStatus = SocketConnectStatus.connected;
+        this.socketConnectStatus = SocketConnectStatus.connected;
         this._toggleConnectInformerClass(false, false, true);
     }
 
     request(url: string, options?: object): Promise<any> {
-        return fetch(url, _.extend({}, options, {
+        return fetch(url, extend({}, options, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             },

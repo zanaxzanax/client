@@ -1,8 +1,7 @@
-import {AppListInterface, GameItem} from '../../types';
+import {AppListInterface, GameItem, SocketInterface} from '../../types';
 import App from './app';
 import {AppType} from '../enums';
 import Socket from '../../socket';
-import {SocketInterface} from '../../types/socket';
 
 export default class AppList extends App implements AppListInterface {
 
@@ -29,20 +28,13 @@ export default class AppList extends App implements AppListInterface {
 
     onSocketConnect(arg: any): void {
         super.onSocketConnect(arg);
-        this.refresh();
+        this._refresh();
     }
 
     onSocketDisconnect(arg: any): void {
         super.onSocketDisconnect(arg);
         this.games.length = 0;
-        this.drawGames();
-    }
-
-    refresh(): Promise<any> {
-        return this.loadGames().then((games: GameItem[]) => {
-            this.games = games;
-            this.drawGames();
-        });
+        this._drawGames();
     }
 
     removeGames(uuids: string[]): void {
@@ -52,12 +44,12 @@ export default class AppList extends App implements AppListInterface {
                 this.games.splice(this.games.indexOf(founded), 1);
             }
         });
-        this.drawGames();
+        this._drawGames();
     }
 
     addGame(options: GameItem): void {
         this.games.push(options);
-        this.drawGames();
+        this._drawGames();
     }
 
     updateGames(games: GameItem[]): void {
@@ -68,11 +60,7 @@ export default class AppList extends App implements AppListInterface {
                 this.games.splice(i, 1, founded);
             }
         });
-        this.drawGames();
-    }
-
-    loadGames(): Promise<GameItem[]> {
-        return this.request(`/api/game`);
+        this._drawGames();
     }
 
     removeGame(uuid: string): Promise<Response> {
@@ -81,7 +69,19 @@ export default class AppList extends App implements AppListInterface {
         });
     }
 
-    getRowActions(game: GameItem): string {
+    private _refresh(): Promise<any> {
+        return this._loadGames().then((games: GameItem[]) => {
+            this.games = games;
+            this._drawGames();
+        });
+    }
+
+    private _loadGames(): Promise<GameItem[]> {
+        return this.request(`/api/game`);
+    }
+
+
+    private _getRowActions(game: GameItem): string {
         let result: string = '';
         if (this.player.uuid === game.creator.uuid) {
             result += `<button class="btn btn-link  btn-sm" onclick="appSnake.removeGame('${game.uuid}')">remove</button>`;
@@ -92,22 +92,22 @@ export default class AppList extends App implements AppListInterface {
         return result;
     }
 
-    getSlots(game: GameItem): string {
+    private _getSlots(game: GameItem): string {
         return `[${game.slots.length}/${game.playersLimit}]`;
     }
 
-    getGameRow(game: GameItem, i: number): string {
+    private _getGameRow(game: GameItem, i: number): string {
         let row: string = '';
         row += `<tr id="${game.uuid}">`;
         row += `<td>${i}</td>`;
         row += `<td>${game.name}</td>`;
-        row += `<td>${this.getSlots(game)}</td>`;
-        row += `<td>${this.getRowActions(game)}</td>`;
+        row += `<td>${this._getSlots(game)}</td>`;
+        row += `<td>${this._getRowActions(game)}</td>`;
         row += `</tr>`;
         return row;
     }
 
-    getTableHead(): string {
+    private _getTableHead(): string {
         return `
             <thead>
                 <tr>
@@ -119,18 +119,18 @@ export default class AppList extends App implements AppListInterface {
             </thead>`
     }
 
-    getTableBody(): string {
+    private _getTableBody(): string {
         let body: string = `<tbody>`;
-        body += this.games.map((game: GameItem, i: number) => this.getGameRow(game, i + 1)).join('');
+        body += this.games.map((game: GameItem, i: number) => this._getGameRow(game, i + 1)).join('');
         body += `</tbody>`;
         return body;
     }
 
-    drawGames(): void {
+    private _drawGames(): void {
         const container: HTMLElement = document.getElementById('games');
         let content: string = `<table class="table table-striped">`;
-        content += this.getTableHead();
-        content += this.getTableBody();
+        content += this._getTableHead();
+        content += this._getTableBody();
         content += `</table>`;
         container.innerHTML = content;
     }

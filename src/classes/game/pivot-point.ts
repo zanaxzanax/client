@@ -4,7 +4,7 @@ import {PivotPointType} from '../enums';
 
 export default class PivotPoint extends Point implements PivotPointInterface {
 
-    static color: 'black';
+    static color: string = 'black';
 
     x: number;
     y: number;
