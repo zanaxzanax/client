@@ -92,7 +92,6 @@ export class MultiGame extends Game implements MultiGameInterface {
     }
 
     updateGame(game: GameItem): void {
-        console.log('updateGame', game);
         this.game = game;
         this.state = this.game.state;
         this.uuid = this.game.uuid;
@@ -101,7 +100,6 @@ export class MultiGame extends Game implements MultiGameInterface {
     }
 
     removeGame(): void {
-        console.log('removeGame');
         this.game.state = GameState.DELETED;
         this.updateGame(this.game);
     }
@@ -194,8 +192,10 @@ export class MultiGame extends Game implements MultiGameInterface {
                         playerStateText = Game.langPlayerState[PlayerState.DRAW];
                     } else if (curSidePlayer.isWinner()) {
                         playerStateText = Game.langPlayerState[PlayerState.WINNER];
-                    } else {
+                    } else if (curSidePlayer.isLoser()) {
                         playerStateText = Game.langPlayerState[PlayerState.LOSER];
+                    } else {
+                        playerStateText = Game.langPlayerState[PlayerState.WINNER];
                     }
                     this.drawing.text(playerStateText, this.centerPoint.x, this.centerPoint.y, 'blue');
                 }
